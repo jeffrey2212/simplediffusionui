@@ -1,4 +1,4 @@
-import { PromptModule, DynamicAttribute, AttributeOption } from '../types';
+import { PromptModule, DynamicAttribute, AttributeOption, ModuleNodeData } from '../types';
 
 interface ExtendedDynamicAttribute extends DynamicAttribute {
   category?: string;
@@ -36,9 +36,140 @@ const characterDynamicAttributes: ExtendedDynamicAttribute[] = [
   }
 ];
 
-export const defaultModules: PromptModule[] = [
+const characterAttributes: DynamicAttribute[] = [
+  {
+    key: 'gender',
+    label: '性别',
+    type: 'select',
+    value: '男',
+    options: [
+      { value: '男', label: '男' },
+      { value: '女', label: '女' },
+    ],
+  },
+  {
+    key: 'age',
+    label: '年龄段',
+    type: 'select',
+    value: '成年',
+    options: [
+      { value: '儿童', label: '儿童' },
+      { value: '青少年', label: '青少年' },
+      { value: '成年', label: '成年' },
+      { value: '老年', label: '老年' },
+    ],
+  },
+  {
+    key: 'style',
+    label: '风格',
+    type: 'select',
+    value: '写实',
+    options: [
+      {
+        value: '写实',
+        label: '写实',
+        subParams: [
+          {
+            key: 'realism_level',
+            label: '写实程度',
+            type: 'select',
+            value: '高',
+            options: [
+              { value: '低', label: '低' },
+              { value: '中', label: '中' },
+              { value: '高', label: '高' },
+            ],
+          },
+        ],
+      },
+      {
+        value: '动漫',
+        label: '动漫',
+        subParams: [
+          {
+            key: 'anime_style',
+            label: '动漫风格',
+            type: 'select',
+            value: '日系',
+            options: [
+              { value: '日系', label: '日系' },
+              { value: '美系', label: '美系' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const styleAttributes: DynamicAttribute[] = [
+  {
+    key: 'art_style',
+    label: '艺术风格',
+    type: 'select',
+    value: '油画',
+    options: [
+      { value: '油画', label: '油画' },
+      { value: '水彩', label: '水彩' },
+      { value: '素描', label: '素描' },
+    ],
+  },
+];
+
+const attachmentAttributes: DynamicAttribute[] = [
+  {
+    key: 'type',
+    label: '类型',
+    type: 'select',
+    value: '饰品',
+    options: [
+      { value: '饰品', label: '饰品' },
+      { value: '道具', label: '道具' },
+      { value: '背景', label: '背景' },
+    ],
+  },
+];
+
+export const defaultModules: ModuleNodeData[] = [
   {
     id: 'character-1',
+    type: 'CHARACTER',
+    title: '角色',
+    icon: '👤',
+    attributes: {
+      dynamicAttributes: characterAttributes,
+      parameters: {
+        strength: 50,
+        detail: 70,
+      },
+    },
+  },
+  {
+    id: 'style-1',
+    type: 'STYLE',
+    title: '风格',
+    icon: '🎨',
+    attributes: {
+      dynamicAttributes: styleAttributes,
+      parameters: {
+        intensity: 50,
+      },
+    },
+  },
+  {
+    id: 'attachment-1',
+    type: 'ATTACHMENT',
+    title: '附件',
+    icon: '🔧',
+    attributes: {
+      dynamicAttributes: attachmentAttributes,
+      parameters: {
+        visibility: 50,
+      },
+    },
+  },
+  {
+    id: 'character-2',
     type: 'CHARACTER',
     title: '角色',
     icon: '👤',
@@ -148,7 +279,7 @@ export const defaultModules: PromptModule[] = [
     }
   },
   {
-    id: 'style-1',
+    id: 'style-2',
     type: 'STYLE',
     title: '风格',
     icon: '🎨',
@@ -212,7 +343,7 @@ export const defaultModules: PromptModule[] = [
     }
   },
   {
-    id: 'attachment-1',
+    id: 'attachment-2',
     type: 'ATTACHMENT',
     title: '附件',
     icon: '📎',

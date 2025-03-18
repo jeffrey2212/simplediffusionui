@@ -1,59 +1,69 @@
 // src/components/nodes/StyleNode.tsx
-import React, { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { motion } from 'framer-motion';
-import { ModuleNodeData, NodeComponentProps } from '../../types/types';
+import { ModuleNodeData } from '../../types';
+import DynamicAttributeForm from '../DynamicAttributeForm';
 
-interface StyleNodeData extends ModuleNodeData {
-  type: 'STYLE';
-  icon: string;
-  title: string;
-  renderContent: () => React.ReactNode;
+interface StyleNodeProps {
+  data: ModuleNodeData;
 }
 
-const StyleNode: React.FC<NodeComponentProps<StyleNodeData>> = ({ data, id, isConnectable }) => {
+const StyleNode: React.FC<StyleNodeProps> = ({ data }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white rounded-lg shadow-lg p-4 min-w-[200px]"
-    >
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-        className="w-4 h-4 !bg-teal-500"
-      />
-
-      <div className="flex items-center mb-4">
-        <span className="text-xl mr-2">{data.icon}</span>
-        <h3 className="text-lg font-semibold text-gray-800">{data.title}</h3>
+    <div className="bg-gray-800 rounded-lg shadow-lg p-4 min-w-[200px]">
+      <Handle type="target" position={Position.Top} />
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xl">{data.icon}</span>
+        <h3 className="text-lg font-semibold text-white">{data.title}</h3>
       </div>
 
       <div className="space-y-4">
-        {data.renderContent()}
-        
-        <div className="mt-4">
-          <h4 className="text-sm font-medium text-gray-600 mb-2">Parameters</h4>
-          {Object.entries(data.attributes.parameters).map(([key, value]) => (
-            <div key={key} className="flex justify-between text-sm">
-              <span className="text-gray-600">{key}:</span>
-              <span className="text-gray-800">{String(value)}</span>
+        {data.attributes.dynamicAttributes.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">动态属性</h4>
+            <div className="space-y-2">
+              {data.attributes.dynamicAttributes.map((attr, index) => (
+                <DynamicAttributeForm
+                  key={index}
+                  attribute={attr}
+                  onChange={(updatedAttr) => {
+                    console.log('Attribute changed:', updatedAttr);
+                  }}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {Object.entries(data.attributes.parameters).length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">参数</h4>
+            <div className="space-y-2">
+              {Object.entries(data.attributes.parameters).map(([key, value]) => (
+                <div key={key} className="flex flex-col">
+                  <label className="text-xs text-gray-500 mb-1">{key}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={value}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0</span>
+                    <span>{value}</span>
+                    <span>100</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={isConnectable}
-        className="w-4 h-4 !bg-teal-500"
-      />
-    </motion.div>
+      <Handle type="source" position={Position.Bottom} />
+    </div>
   );
 };
 
-StyleNode.displayName = 'StyleNode';
-
-export default memo(StyleNode);
+export default StyleNode;

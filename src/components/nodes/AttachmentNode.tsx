@@ -1,39 +1,68 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { motion } from 'framer-motion';
-import { ModuleNodeData, NodeComponentProps } from '../../types/types';
+import { ModuleNodeData } from '../../types';
+import DynamicAttributeForm from '../DynamicAttributeForm';
 
-interface AttachmentNodeData extends ModuleNodeData {
-  type: 'ATTACHMENT';
-  icon: string;
-  title: string;
-  renderContent: () => React.ReactNode;
+interface AttachmentNodeProps {
+  data: ModuleNodeData;
 }
 
-const AttachmentNode: React.FC<NodeComponentProps<AttachmentNodeData>> = ({ data, id, isConnectable }) => {
+const AttachmentNode: React.FC<AttachmentNodeProps> = ({ data }) => {
   return (
-    <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      className="attachment-node bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700"
-    >
-      <Handle
-        type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-      />
-      <div className="flex items-center space-x-2 mb-4">
-        <span className="text-2xl">{data.icon}</span>
-        <h3 className="text-lg font-semibold text-gray-200">{data.title}</h3>
+    <div className="bg-gray-800 rounded-lg shadow-lg p-4 min-w-[200px]">
+      <Handle type="target" position={Position.Top} />
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xl">{data.icon}</span>
+        <h3 className="text-lg font-semibold text-white">{data.title}</h3>
       </div>
-      {data.renderContent()}
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={isConnectable}
-      />
-    </motion.div>
+
+      <div className="space-y-4">
+        {data.attributes.dynamicAttributes.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">动态属性</h4>
+            <div className="space-y-2">
+              {data.attributes.dynamicAttributes.map((attr, index) => (
+                <DynamicAttributeForm
+                  key={index}
+                  attribute={attr}
+                  onChange={(key, value) => {
+                    console.log('Attribute changed:', key, value);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {Object.entries(data.attributes.parameters).length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-400 mb-2">参数</h4>
+            <div className="space-y-2">
+              {Object.entries(data.attributes.parameters).map(([key, value]) => (
+                <div key={key} className="flex flex-col">
+                  <label className="text-xs text-gray-500 mb-1">{key}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={value}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0</span>
+                    <span>{value}</span>
+                    <span>100</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <Handle type="source" position={Position.Bottom} />
+    </div>
   );
 };
 
-export default memo(AttachmentNode);
+export default AttachmentNode;
