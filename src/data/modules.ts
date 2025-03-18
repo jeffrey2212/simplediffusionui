@@ -2,126 +2,48 @@ import { PromptModule } from '../types';
 
 export const subjects: PromptModule[] = [
   {
-    id: 'subject-1',
+    id: 'subject-person',
     title: '人物',
     icon: '👤',
     type: 'SUBJECT',
     attributes: {
       parameters: {
-        detail: 75,
-        realism: 60,
-        lighting: 50
-      }
-    }
-  },
-  {
-    id: 'subject-2',
-    title: '风景',
-    icon: '🌄',
-    type: 'SUBJECT',
-    attributes: {
-      parameters: {
-        scale: 80,
-        atmosphere: 70,
-        depth: 65
-      }
-    }
-  },
-  {
-    id: 'subject-3',
-    title: '动物',
-    icon: '🦊',
-    type: 'SUBJECT',
-    attributes: {
-      parameters: {
-        detail: 70,
-        action: 50,
-        expression: 60
-      }
-    }
-  }
-];
-
-export const styles: PromptModule[] = [
-  {
-    id: 'style-1',
-    title: '水彩',
-    icon: '🎨',
-    type: 'STYLE',
-    attributes: {
-      parameters: {
-        intensity: 65,
-        blending: 70,
-        texture: 80
-      }
-    }
-  },
-  {
-    id: 'style-2',
-    title: '赛博朋克',
-    icon: '🌆',
-    type: 'STYLE',
-    attributes: {
-      parameters: {
-        neon: 75,
-        tech: 80,
-        grit: 60
-      }
-    }
-  },
-  {
-    id: 'style-3',
-    title: '动漫',
-    icon: '✨',
-    type: 'STYLE',
-    attributes: {
-      parameters: {
-        stylization: 85,
-        shading: 70,
-        lineArt: 75
+        // 基础属性
+        gender: 50, // 0: 女性, 100: 男性
+        age: 25, // 年龄 (0-100)
+        height: 50, // 身高比例
+        build: 50, // 体型 (0: 瘦, 100: 壮)
+        
+        // 面部特征
+        face_shape: 50, // 脸型 (0: 圆, 100: 方)
+        skin_tone: 50, // 肤色
+        eye_size: 50, // 眼睛大小
+        eye_color: 50, // 眼睛颜色
+        nose_size: 50, // 鼻子大小
+        lip_size: 50, // 嘴唇大小
+        
+        // 发型
+        hair_length: 50, // 头发长度
+        hair_color: 50, // 头发颜色
+        hair_style: 50, // 发型风格
+        
+        // 表情和姿势
+        expression: 50, // 表情 (0: 严肃, 100: 开心)
+        pose: 50, // 姿势 (0: 静态, 100: 动态)
+        
+        // 服装
+        clothing_style: 50, // 服装风格
+        clothing_color: 50, // 服装颜色
+        
+        // 渲染风格
+        detail_level: 75, // 细节程度
+        realism: 60, // 真实感
+        lighting: 50, // 光照效果
       }
     }
   }
 ];
 
-export const environments: PromptModule[] = [
-  {
-    id: 'env-1',
-    title: '城市',
-    icon: '🌃',
-    type: 'ENVIRONMENT',
-    attributes: {
-      parameters: {
-        density: 70,
-        timeOfDay: 50,
-        weather: 60
-      }
-    }
-  },
-  {
-    id: 'env-2',
-    title: '自然',
-    icon: '🌲',
-    type: 'ENVIRONMENT',
-    attributes: {
-      parameters: {
-        vegetation: 80,
-        terrain: 65,
-        atmosphere: 75
-      }
-    }
-  },
-  {
-    id: 'env-3',
-    title: '室内',
-    icon: '🏠',
-    type: 'ENVIRONMENT',
-    attributes: {
-      parameters: {
-        lighting: 60,
-        furnishing: 70,
-        mood: 65
-      }
-    }
-  }
-];
+// 暂时隐藏其他模块
+export const styles: PromptModule[] = [];
+export const environments: PromptModule[] = [];
