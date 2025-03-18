@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { PromptModule } from '../types';
 import { useState } from 'react';
+import DynamicAttributeForm from './DynamicAttributeForm';
 
 interface CanvasProps {
   modules: PromptModule[];
@@ -19,39 +20,10 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
   const [hoveredParam, setHoveredParam] = useState<string | null>(null);
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
+  const [activeModules, setActiveModules] = useState<PromptModule[]>([]);
 
-  const parameterGroups: ParameterGroup[] = [
-    {
-      title: '基础属性',
-      icon: '👤',
-      parameters: ['gender', 'age', 'height', 'build']
-    },
-    {
-      title: '面部特征',
-      icon: '👀',
-      parameters: ['face_shape', 'skin_tone', 'eye_size', 'eye_color', 'nose_size', 'lip_size']
-    },
-    {
-      title: '发型',
-      icon: '💇‍♂️',
-      parameters: ['hair_length', 'hair_color', 'hair_style']
-    },
-    {
-      title: '表情和姿势',
-      icon: '🎭',
-      parameters: ['expression', 'pose']
-    },
-    {
-      title: '服装',
-      icon: '👔',
-      parameters: ['clothing_style', 'clothing_color']
-    },
-    {
-      title: '渲染风格',
-      icon: '🎨',
-      parameters: ['detail_level', 'realism', 'lighting']
-    }
-  ];
+  const hasCharacterNode = activeModules.some(module => module.type === 'CHARACTER');
 
   const handleInputChange = (
     index: number,
@@ -67,6 +39,12 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
     }
   };
 
+  const handleAttributeChange = (moduleIndex: number, key: string, value: any) => {
+    setSelectedAttributes(prev => ({ ...prev, [key]: value }));
+    // Here you would also update the module's state in the parent component
+    console.log(`Module ${moduleIndex} attribute ${key} changed to:`, value);
+  };
+
   const toggleModuleExpansion = (moduleId: string) => {
     setExpandedModules(prev =>
       prev.includes(moduleId)
@@ -75,57 +53,164 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
     );
   };
 
-  const toggleGroupExpansion = (groupTitle: string) => {
+  const toggleGroupExpansion = (groupKey: string) => {
     setExpandedGroups(prev =>
-      prev.includes(groupTitle)
-        ? prev.filter(title => title !== groupTitle)
-        : [...prev, groupTitle]
+      prev.includes(groupKey)
+        ? prev.filter(key => key !== groupKey)
+        : [...prev, groupKey]
     );
   };
 
-  const getParamDescription = (paramName: string): string => {
-    const descriptions: { [key: string]: string } = {
-      gender: '性别 - 调整人物的性别特征',
-      age: '年龄 - 调整人物的年龄',
-      height: '身高 - 调整人物的身高比例',
-      build: '体型 - 调整人物的体型特征',
-      face_shape: '脸型 - 调整面部轮廓',
-      skin_tone: '肤色 - 调整皮肤的色调',
-      eye_size: '眼睛大小 - 调整眼睛的大小',
-      eye_color: '眼睛颜色 - 调整眼睛的颜色',
-      nose_size: '鼻子大小 - 调整鼻子的大小',
-      lip_size: '嘴唇大小 - 调整嘴唇的大小',
-      hair_length: '发长 - 调整头发的长度',
-      hair_color: '发色 - 调整头发的颜色',
-      hair_style: '发型 - 调整头发的造型',
-      expression: '表情 - 调整面部表情',
-      pose: '姿势 - 调整人物的姿态',
-      clothing_style: '服装风格 - 调整服装的风格',
-      clothing_color: '服装颜色 - 调整服装的颜色',
-      detail_level: '细节程度 - 控制图像中的细节丰富程度',
-      realism: '真实感 - 调整图像的真实感程度',
-      lighting: '光照 - 调整场景的整体光照效果'
-    };
-    return descriptions[paramName] || paramName;
+  const renderCoreAttributes = (module: PromptModule, moduleIndex: number) => {
+    if (!module.attributes.coreAttributes) return null;
+
+    return (
+      <div className="space-y-4 p-4 bg-gray-800 rounded-lg">
+        <h4 className="text-sm font-medium text-gray-300">核心属性</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm text-gray-400">性别</label>
+            <select
+              value={module.attributes.coreAttributes.gender}
+              onChange={(e) => handleAttributeChange(moduleIndex, 'gender', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:border-purple-500 focus:outline-none"
+            >
+              <option value="male">男性</option>
+              <option value="female">女性</option>
+              <option value="neutral">中性</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-gray-400">年龄阶段</label>
+            <select
+              value={module.attributes.coreAttributes.ageStage}
+              onChange={(e) => handleAttributeChange(moduleIndex, 'ageStage', e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:border-purple-500 focus:outline-none"
+            >
+              <option value="child">儿童</option>
+              <option value="youth">青年</option>
+              <option value="middle">中年</option>
+              <option value="elder">老年</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  const getParamValue = (value: number, paramName: string): string => {
-    if (paramName === 'gender') {
-      return value <= 30 ? '女性' : value >= 70 ? '男性' : '中性';
-    }
-    if (paramName === 'age') {
-      return `${Math.round(value)}岁`;
-    }
-    return `${value}`;
+  const renderDynamicAttributes = (module: PromptModule, moduleIndex: number) => {
+    if (!module.attributes.dynamicAttributes) return null;
+
+    return (
+      <div className="space-y-4">
+        {module.attributes.dynamicAttributes.map((attr) => (
+          <div key={attr.key} className="border border-gray-600 rounded-lg overflow-hidden">
+            <div
+              className="flex items-center gap-2 p-3 bg-gray-800 cursor-pointer hover:bg-gray-750 transition-colors"
+              onClick={() => toggleGroupExpansion(attr.key)}
+            >
+              <h4 className="text-sm font-medium text-gray-300">{attr.label}</h4>
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ml-auto ${
+                  expandedGroups.includes(attr.key) ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+            <AnimatePresence>
+              {expandedGroups.includes(attr.key) && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-4 bg-gray-700">
+                    <DynamicAttributeForm
+                      attribute={attr}
+                      onValueChange={(key, value) => handleAttributeChange(moduleIndex, key, value)}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ))}
+      </div>
+    );
   };
 
-  const generatePrompt = () => {
-    return modules.map(module => {
-      const params = Object.entries(module.attributes.parameters)
-        .map(([key, value]) => `${key}:${getParamValue(value, key)}`)
-        .join(', ');
-      return `${module.title} (${params})`;
-    }).join(' + ');
+  const renderBaseParameters = (module: PromptModule, moduleIndex: number) => {
+    return (
+      <div className="space-y-4 p-4 bg-gray-800 rounded-lg">
+        <h4 className="text-sm font-medium text-gray-300">基础参数</h4>
+        <div className="space-y-4">
+          {Object.entries(module.attributes.parameters).map(([paramName, value]) => (
+            <div
+              key={paramName}
+              className="space-y-2"
+              onMouseEnter={() => setHoveredParam(paramName)}
+              onMouseLeave={() => setHoveredParam(null)}
+            >
+              <div className="flex justify-between items-center relative">
+                <label className="text-sm text-gray-300">{paramName}</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={
+                      focusedInput === `${module.id}-${paramName}`
+                        ? undefined
+                        : value
+                    }
+                    onChange={(e) =>
+                      handleInputChange(moduleIndex, paramName, e.target.value, 0, 100)
+                    }
+                    onFocus={() => setFocusedInput(`${module.id}-${paramName}`)}
+                    onBlur={() => setFocusedInput(null)}
+                    className="w-16 px-2 py-1 text-sm bg-gray-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="relative group">
+                <div className="absolute -left-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">0</div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={value}
+                  onChange={(e) =>
+                    onUpdateParameter(moduleIndex, paramName, parseInt(e.target.value, 10))
+                  }
+                  className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                />
+                <div className="absolute -right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">100</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const handleAddModule = (module: PromptModule) => {
+    if (module.type === 'CHARACTER' || hasCharacterNode) {
+      setActiveModules(prev => [...prev, module]);
+    }
+  };
+
+  const handleRemoveModule = (moduleId: string) => {
+    setActiveModules(prev => prev.filter(m => m.id !== moduleId));
+    onRemoveModule(activeModules.findIndex(m => m.id === moduleId));
   };
 
   return (
@@ -164,7 +249,7 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
                 className="bg-gray-700 rounded-lg p-4 shadow-lg border border-gray-600 hover:border-purple-500/30 transition-colors"
               >
                 <div 
-                  className="flex justify-between items-start cursor-pointer"
+                  className="flex justify-between items-start cursor-pointer mb-4"
                   onClick={() => toggleModuleExpansion(module.id)}
                 >
                   <div className="flex items-center gap-2">
@@ -186,31 +271,26 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
                       />
                     </svg>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400">
-                      {Object.keys(module.attributes.parameters).length} 参数
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveModule(moduleIndex);
-                      }}
-                      className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-400/10"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveModule(module.id);
+                    }}
+                    className="text-gray-400 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-400/10"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
 
                 <AnimatePresence>
-                  {expandedModules.includes(module.id) && module.attributes?.parameters && (
+                  {expandedModules.includes(module.id) && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
@@ -218,111 +298,16 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-4 mt-4">
-                        {parameterGroups.map((group) => (
-                          <div key={group.title} className="border border-gray-600 rounded-lg overflow-hidden">
-                            <div
-                              className="flex items-center gap-2 p-3 bg-gray-800 cursor-pointer hover:bg-gray-750 transition-colors"
-                              onClick={() => toggleGroupExpansion(group.title)}
-                            >
-                              <span className="text-xl">{group.icon}</span>
-                              <h4 className="text-sm font-medium text-gray-300">{group.title}</h4>
-                              <svg
-                                className={`w-4 h-4 text-gray-400 transition-transform ml-auto ${
-                                  expandedGroups.includes(group.title) ? 'rotate-180' : ''
-                                }`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
-                            </div>
-                            <AnimatePresence>
-                              {expandedGroups.includes(group.title) && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: 'auto', opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.2 }}
-                                  className="overflow-hidden"
-                                >
-                                  <div className="p-3 space-y-4 bg-gray-700">
-                                    {group.parameters.map((paramName) => (
-                                      <div
-                                        key={paramName}
-                                        className="space-y-2"
-                                        onMouseEnter={() => setHoveredParam(paramName)}
-                                        onMouseLeave={() => setHoveredParam(null)}
-                                      >
-                                        <div className="flex justify-between items-center relative">
-                                          <label className="text-sm text-gray-300">
-                                            {paramName}
-                                            <span className="ml-2 text-gray-400">
-                                              {getParamValue(module.attributes.parameters[paramName], paramName)}
-                                            </span>
-                                          </label>
-                                          {hoveredParam === paramName && (
-                                            <motion.div
-                                              initial={{ opacity: 0, y: 5 }}
-                                              animate={{ opacity: 1, y: 0 }}
-                                              exit={{ opacity: 0, y: 5 }}
-                                              className="absolute left-0 -top-8 bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded shadow-lg z-10 whitespace-nowrap"
-                                            >
-                                              {getParamDescription(paramName)}
-                                            </motion.div>
-                                          )}
-                                          <div className="relative">
-                                            <input
-                                              type="number"
-                                              value={
-                                                focusedInput === `${module.id}-${paramName}`
-                                                  ? undefined
-                                                  : module.attributes.parameters[paramName]
-                                              }
-                                              onChange={(e) =>
-                                                handleInputChange(moduleIndex, paramName, e.target.value, 0, 100)
-                                              }
-                                              onFocus={() => setFocusedInput(`${module.id}-${paramName}`)}
-                                              onBlur={() => setFocusedInput(null)}
-                                              className="w-16 px-2 py-1 text-sm bg-gray-800 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
-                                            />
-                                          </div>
-                                        </div>
-                                        <div className="relative group">
-                                          <div className="absolute -left-2 top-1/2 -translate-y-1/2 text-xs text-gray-500">0</div>
-                                          <input
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            value={module.attributes.parameters[paramName]}
-                                            onChange={(e) =>
-                                              onUpdateParameter(moduleIndex, paramName, parseInt(e.target.value, 10))
-                                            }
-                                            className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-purple-500"
-                                          />
-                                          <div className="absolute -right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500">100</div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        ))}
+                      <div className="space-y-4">
+                        {renderCoreAttributes(module, moduleIndex)}
+                        {renderDynamicAttributes(module, moduleIndex)}
+                        {renderBaseParameters(module, moduleIndex)}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </motion.div>
             ))}
-
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -331,7 +316,18 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
               <h3 className="text-lg font-semibold text-purple-400 mb-2">生成的 Prompt</h3>
               <div className="bg-gray-900 p-3 rounded-lg">
                 <p className="text-gray-300 font-mono text-sm break-all">
-                  {generatePrompt()}
+                  {activeModules.map(module => {
+                    const params = [
+                      // Core attributes
+                      module.attributes.coreAttributes && `性别:${module.attributes.coreAttributes.gender}, 年龄:${module.attributes.coreAttributes.ageStage}`,
+                      // Dynamic attributes
+                      ...Object.entries(selectedAttributes).map(([key, value]) => `${key}:${value}`),
+                      // Base parameters
+                      ...Object.entries(module.attributes.parameters).map(([key, value]) => `${key}:${value}`)
+                    ].filter(Boolean).join(', ');
+                    
+                    return `${module.title} (${params})`;
+                  }).join(' + ')}
                 </p>
               </div>
             </motion.div>
