@@ -23,7 +23,8 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [activeModules, setActiveModules] = useState<PromptModule[]>([]);
 
-  const hasCharacterNode = activeModules.some(module => module.type === 'CHARACTER');
+  // We're not using this component anymore, but keeping it for reference
+  const hasCharacterNode = modules.some(module => module.type === 'CHARACTER');
 
   const handleInputChange = (
     index: number,
@@ -62,7 +63,7 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
   };
 
   const renderCoreAttributes = (module: PromptModule, moduleIndex: number) => {
-    if (!module.attributes.coreAttributes) return null;
+    if (!module.attributes.coreAttributes || module.type !== 'CHARACTER') return null;
 
     return (
       <div className="space-y-4 p-4 bg-gray-800 rounded-lg">
@@ -138,7 +139,11 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
                   <div className="p-4 bg-gray-700">
                     <DynamicAttributeForm
                       attribute={attr}
-                      onValueChange={(key, value) => handleAttributeChange(moduleIndex, key, value)}
+                      onChange={(updatedAttr) => {
+                        // Extract the key and value from the updated attribute
+                        const { key, value } = updatedAttr;
+                        handleAttributeChange(moduleIndex, key, value);
+                      }}
                     />
                   </div>
                 </motion.div>
@@ -214,7 +219,7 @@ export default function Canvas({ modules, onRemoveModule, onUpdateParameter }: C
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ width: '100%', height: '600px' }}>
       <AnimatePresence>
         {modules.length === 0 ? (
           <motion.div

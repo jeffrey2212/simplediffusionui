@@ -1,38 +1,60 @@
+import { ModuleNodeData as ModuleData } from './types';
+export * from './types';
+
 export interface PromptModule {
   id: string;
+  type: 'CHARACTER' | 'ATTACHMENT' | 'STYLE' | 'ENVIRONMENT';
   title: string;
   icon: string;
-  type: 'CHARACTER' | 'ATTACHMENT' | 'STYLE' | 'ENVIRONMENT';
-  attributes: ModuleAttributes;
+  position?: { x: number; y: number };
+  attributes: {
+    coreAttributes?: {
+      gender?: string;
+      ageStage?: string;
+      style?: string;
+    };
+    dynamicAttributes: Array<{
+      key: string;
+      label: string;
+      type: 'text' | 'select';
+      value: string;
+      options?: Array<{
+        value: string;
+        label: string;
+        preview?: string;
+        subParams?: Array<{
+          key: string;
+          label: string;
+          type: 'text' | 'select';
+          options?: Array<{
+            value: string;
+            label: string;
+            preview?: string;
+          }>;
+        }>;
+      }>;
+    }>;
+    parameters: Record<string, number>;
+  };
 }
 
 export interface ModuleAttributes {
   coreAttributes?: {
+    gender?: string;
+    ageStage?: string;
+    style?: string;
+  } | Partial<{
     gender: string;
     ageStage: string;
-  };
-  dynamicAttributes?: DynamicAttribute[];
+    style: string;
+  }>;
+  dynamicAttributes?: ModuleData['attributes']['dynamicAttributes'];
   parameters: Record<string, number>;
 }
 
-export interface DynamicAttribute {
-  key: string;
-  label: string;
-  value: number;
-}
-
 export interface CoreAttributes {
-  gender: 'male' | 'female' | 'neutral';
+  gender: 'male' | 'female'  ;
   ageStage: 'child' | 'youth' | 'middle' | 'elder';
-}
-
-export interface AttributeOption {
-  value: string;
-  preview: string;
-  subParams?: {
-    key: string;
-    controls: ParamConfig[];
-  };
 }
 
 export interface ParamRange {
