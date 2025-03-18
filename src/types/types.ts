@@ -21,6 +21,7 @@ export interface DynamicAttribute {
 
 // Module attributes interface
 export interface ModuleAttributes {
+  coreAttributes: any;
   dynamicAttributes: DynamicAttribute[];
   parameters?: Record<string, number>;
 }

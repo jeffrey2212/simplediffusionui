@@ -441,15 +441,18 @@ export const subjects: PromptModule[] = [
             },
             {
               value: 'nose',
-              preview: '/assets/face/nose.png'
+              preview: '/assets/face/nose.png',
+              label: ''
             },
             {
               value: 'mouth',
-              preview: '/assets/face/mouth.png'
+              preview: '/assets/face/mouth.png',
+              label: ''
             },
             {
               value: 'ears',
-              preview: '/assets/face/ears.png'
+              preview: '/assets/face/ears.png',
+              label: ''
             }
           ]
         },
@@ -460,21 +463,26 @@ export const subjects: PromptModule[] = [
           options: [
             {
               value: 'short',
-              preview: '/assets/hair/short.png'
+              preview: '/assets/hair/short.png',
+              label: ''
             },
             {
               value: 'long',
-              preview: '/assets/hair/long.png'
+              preview: '/assets/hair/long.png',
+              label: ''
             },
             {
               value: 'curly',
-              preview: '/assets/hair/curly.png'
+              preview: '/assets/hair/curly.png',
+              label: ''
             },
             {
               value: 'bald',
-              preview: '/assets/hair/bald.png'
+              preview: '/assets/hair/bald.png',
+              label: ''
             }
-          ]
+          ],
+          type: 'select'
         }
       ],
       parameters: {
@@ -503,15 +511,40 @@ export const attachments: PromptModule[] = [
           label: '发色',
           value: 'black',
           options: [
-            { value: 'black', preview: '/assets/colors/black.png' },
-            { value: 'brown', preview: '/assets/colors/brown.png' },
-            { value: 'blonde', preview: '/assets/colors/blonde.png' },
-            { value: 'red', preview: '/assets/colors/red.png' },
-            { value: 'white', preview: '/assets/colors/white.png' },
-            { value: 'blue', preview: '/assets/colors/blue.png' },
-            { value: 'green', preview: '/assets/colors/green.png' },
-            { value: 'purple', preview: '/assets/colors/purple.png' }
-          ]
+            {
+              value: 'black', preview: '/assets/colors/black.png',
+              label: ''
+            },
+            {
+              value: 'brown', preview: '/assets/colors/brown.png',
+              label: ''
+            },
+            {
+              value: 'blonde', preview: '/assets/colors/blonde.png',
+              label: ''
+            },
+            {
+              value: 'red', preview: '/assets/colors/red.png',
+              label: ''
+            },
+            {
+              value: 'white', preview: '/assets/colors/white.png',
+              label: ''
+            },
+            {
+              value: 'blue', preview: '/assets/colors/blue.png',
+              label: ''
+            },
+            {
+              value: 'green', preview: '/assets/colors/green.png',
+              label: ''
+            },
+            {
+              value: 'purple', preview: '/assets/colors/purple.png',
+              label: ''
+            }
+          ],
+          type: 'select'
         }
       ],
       parameters: {
@@ -535,27 +568,68 @@ export const attachments: PromptModule[] = [
           label: '服装类型',
           value: 'casual',
           options: [
-            { value: 'casual', preview: '/assets/clothing/casual.png' },
-            { value: 'formal', preview: '/assets/clothing/formal.png' },
-            { value: 'business', preview: '/assets/clothing/business.png' },
-            { value: 'sportswear', preview: '/assets/clothing/sportswear.png' },
-            { value: 'traditional', preview: '/assets/clothing/traditional.png' }
-          ]
+            {
+              value: 'casual', preview: '/assets/clothing/casual.png',
+              label: ''
+            },
+            {
+              value: 'formal', preview: '/assets/clothing/formal.png',
+              label: ''
+            },
+            {
+              value: 'business', preview: '/assets/clothing/business.png',
+              label: ''
+            },
+            {
+              value: 'sportswear', preview: '/assets/clothing/sportswear.png',
+              label: ''
+            },
+            {
+              value: 'traditional', preview: '/assets/clothing/traditional.png',
+              label: ''
+            }
+          ],
+          type: 'select'
         },
         {
           key: 'clothing_color',
           label: '服装颜色',
           value: 'black',
           options: [
-            { value: 'black', preview: '/assets/colors/black.png' },
-            { value: 'white', preview: '/assets/colors/white.png' },
-            { value: 'red', preview: '/assets/colors/red.png' },
-            { value: 'blue', preview: '/assets/colors/blue.png' },
-            { value: 'green', preview: '/assets/colors/green.png' },
-            { value: 'yellow', preview: '/assets/colors/yellow.png' },
-            { value: 'purple', preview: '/assets/colors/purple.png' },
-            { value: 'pink', preview: '/assets/colors/pink.png' }
-          ]
+            {
+              value: 'black', preview: '/assets/colors/black.png',
+              label: ''
+            },
+            {
+              value: 'white', preview: '/assets/colors/white.png',
+              label: ''
+            },
+            {
+              value: 'red', preview: '/assets/colors/red.png',
+              label: ''
+            },
+            {
+              value: 'blue', preview: '/assets/colors/blue.png',
+              label: ''
+            },
+            {
+              value: 'green', preview: '/assets/colors/green.png',
+              label: ''
+            },
+            {
+              value: 'yellow', preview: '/assets/colors/yellow.png',
+              label: ''
+            },
+            {
+              value: 'purple', preview: '/assets/colors/purple.png',
+              label: ''
+            },
+            {
+              value: 'pink', preview: '/assets/colors/pink.png',
+              label: ''
+            }
+          ],
+          type: 'select'
         }
       ],
       parameters: {
@@ -579,12 +653,28 @@ export const attachments: PromptModule[] = [
           label: '职业类型',
           value: 'office_worker',
           options: [
-            { value: 'office_worker', preview: '/assets/profession/office.png' },
-            { value: 'artist', preview: '/assets/profession/artist.png' },
-            { value: 'doctor', preview: '/assets/profession/doctor.png' },
-            { value: 'engineer', preview: '/assets/profession/engineer.png' },
-            { value: 'teacher', preview: '/assets/profession/teacher.png' }
-          ]
+            {
+              value: 'office_worker', preview: '/assets/profession/office.png',
+              label: ''
+            },
+            {
+              value: 'artist', preview: '/assets/profession/artist.png',
+              label: ''
+            },
+            {
+              value: 'doctor', preview: '/assets/profession/doctor.png',
+              label: ''
+            },
+            {
+              value: 'engineer', preview: '/assets/profession/engineer.png',
+              label: ''
+            },
+            {
+              value: 'teacher', preview: '/assets/profession/teacher.png',
+              label: ''
+            }
+          ],
+          type: 'select'
         }
       ],
       parameters: {
